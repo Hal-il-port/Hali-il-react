@@ -1,0 +1,35 @@
+.ScheduleItem {
+  display: flex;
+  flex-direction: row;   /* ✅ 수평 정렬 */
+  align-items: center;   /* 아이템을 수직 가운데 정렬 */
+  justify-content: space-around; 
+  border-radius: 8px;
+  gap: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.State_Button {
+  font-weight: bold;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 초기 상태 - 빨간 글씨 */
+.State_Button.in-progress {
+  color: red;
+  background-color: #ffe6e6;
+}
+
+/* 완료 상태 - 연두색 글씨 */
+.State_Button.done {
+  color: green;
+  background-color: #e6ffe6;
+}
+
+.Manage_Button {
+    border: none;
+    cursor: pointer;
+}

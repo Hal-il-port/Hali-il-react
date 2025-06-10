@@ -1,0 +1,16 @@
+.Button{
+    background-color: rgb(236, 236, 236);
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 18px;
+    white-space: nowrap;
+    display: inline-block;
+    width: fit-content;
+}
+
+.Button.LOGIN {
+    background-color: rgb(83, 155, 255);
+    color: white;
+}
