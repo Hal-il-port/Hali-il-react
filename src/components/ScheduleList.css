@@ -1,0 +1,61 @@
+.ScheduleListContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+.date-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.select-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.items-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  min-height: 400px;
+}
+
+/* 개인 및 그룹 영역 세로 정렬 */
+.Personal_area,
+.Group_area {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-width: 600px;
+  gap: 1rem;
+  padding: 30px;
+  width: 100%;
+  border-radius: 30px;
+  background-color: white;
+  align-items: center;
+}
+
+/* 세로 구분선 */
+.vertical-divider {
+  width: 3px;
+  background-color: rgb(22, 21, 93);
+  margin: 0 1rem;
+  /* 높이는 인라인 스타일로 제어 */
+}
+
+/* 추가하기 버튼 */
+.Add_Schedule {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -1,0 +1,38 @@
+.SignupWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 200px;
+    align-items: center;
+    gap: 20px;
+    font-size: 18px;
+}
+
+.SignupWrapper label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.EditText {
+    background-color: white;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 10px 20px;
+    display: block;
+    margin: 5px auto 0 auto;
+    width: 250px;
+    border: 2px solid #ccc;
+}
+
+.EditText.error {
+    border-color: red;
+}
+
+.ToggleButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: underline;
+}
