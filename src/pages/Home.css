@@ -1,7 +1,23 @@
 .MainContent {
     display: flex;
-    gap: 2rem;
     padding: 20px;
+}
+
+.CalendarWrapper {
+    background-color: white;
+    padding: 50px;
+    border-right: double;
+}
+
+.open_hide {
+    background-color: white;
+    border-left: none;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    color: rgb(83, 155, 255);
 }
 
 /* ScheduleList는 남은 공간 */

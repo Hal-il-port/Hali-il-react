@@ -8,6 +8,16 @@
 }
 .Header .title {
     cursor: pointer;
+    gap: 0px;
+}
+
+.Header .title .big {
+    font-weight: bold;
+    font-size: large;
+}
+
+.Header .title .small {
+    font-size: small;
 }
 
 .Header .Login {
@@ -45,6 +55,40 @@
     flex-direction: column;
     gap: 8px;
 }
+
+.dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: rgb(83, 155, 255); /* 아이템 텍스트 색상 지정 */
+    border-radius: 4px;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(83, 155, 255, 0.1); /* 호버 시 살짝 배경색 */
+}
+
+
+.notice-container {
+    position: relative;  /* ✅ 기준점 설정 */
+}
+
+.dropdown-notice {
+    position: absolute;
+    top: 100%;            /* ✅ 부모 바로 아래 */
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 15px;
+    padding: 12px;
+    width: 180px;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 
 .dropdown-item {
     padding: 8px 12px;

@@ -1,0 +1,26 @@
+.react-calendar__navigation__label {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.react-calendar__month-view__weekdays {
+  border-bottom: 2px solid #000;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.react-calendar__tile--now {
+  background: rgba(165, 197, 255) !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.frame {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.holiday {
+  color: red !important;
+}

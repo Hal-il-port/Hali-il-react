@@ -1,7 +1,5 @@
 .ScheduleListContainer {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  margin: 0 20px;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -17,13 +15,25 @@
 .select-row {
   display: flex;
   justify-content: flex-end;
+  width: 100%; /* 너비를 부모 기준 100%로 설정 */
+  padding: 0 1rem;
+  margin-bottom: 20px;
+  margin-right: 40px; /* 필요시 여백 조절 */
+}
+
+.select-row select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .items-row {
   display: flex;
   justify-content: space-around;
   gap: 1rem;
-  min-height: 400px;
+  min-height: 200px;
 }
 
 /* 개인 및 그룹 영역 세로 정렬 */
@@ -33,12 +43,13 @@
   display: flex;
   flex-direction: column;
   min-width: 600px;
-  gap: 1rem;
+  gap: 25px;
   padding: 30px;
   width: 100%;
   border-radius: 30px;
   background-color: white;
   align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 세로 구분선 */
