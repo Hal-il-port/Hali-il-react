@@ -2,6 +2,7 @@ import Button from "../components/Button";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Header from "../components/Header";
 
 const Login = () => {
 
@@ -16,35 +17,38 @@ const Login = () => {
 
 
     return (
-        <div className="LoginWrapper">
-            <label>
-                    Email
-                    <input
-                        className="EditText"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </label>
-
+        <div>
+            <Header />
+            <div className="LoginWrapper">
                 <label>
-                    Password
-                    <input
-                        className="EditText"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </label>
+                        Email
+                        <input
+                            className="EditText"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </label>
 
-                <button className="ToggleButton" onClick={togglePassword}>
-                    {showPassword ? "Hide Password" : "Show Password"}
-                </button>
+                    <label>
+                        Password
+                        <input
+                            className="EditText"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </label>
 
-                <Button 
-                onClick={doneLogin}
-                text={"Log in"}
-                type={"LOGIN"}/>
+                    <button className="ToggleButton" onClick={togglePassword}>
+                        {showPassword ? "Hide Password" : "Show Password"}
+                    </button>
+
+                    <Button 
+                    onClick={doneLogin}
+                    text={"Log in"}
+                    type={"LOGIN"}/>
+            </div>
         </div>
     );
 }
