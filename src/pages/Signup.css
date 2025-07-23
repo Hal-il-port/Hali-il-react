@@ -1,7 +1,7 @@
 .SignupWrapper {
     display: flex;
     flex-direction: column;
-    margin-top: 200px;
+    margin: 100px 0px;
     align-items: center;
     gap: 20px;
     font-size: 18px;

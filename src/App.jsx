@@ -1,30 +1,36 @@
 import { Routes, Route } from "react-router-dom";
-import './App.css'
+import "./App.css";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Mypage from "./pages/Mypage";
 import Notfound from "./pages/Notfound";
-import Friends from "./pages/friends";
 import Groups from "./pages/Groups";
 import Board from "./pages/Board";
+import Friends from "./pages/Friends";
+import AddFriend from "./pages/AddFriend";
+import CreateGroup from "./pages/CreateGroup";
+import ManageGroup from "./pages/manageGroup"; // 대문자 시작
 
 function App() {
-
   return (
     <>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/Mypage" element={<Mypage />} />
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/groups" element={<Groups />} />
+        <Route path="/board" element={<Board />} />
         <Route path="/friends" element={<Friends />} />
-        <Route path="/Groups" element={<Groups/>} />
-        <Route path="/Board" element={<Board/>} />
+        <Route path="/add-friend" element={<AddFriend />} />
+        <Route path="/create-group" element={<CreateGroup />} />
+        <Route path="/manageGroup/:teamId" element={<ManageGroup />} />
+
         <Route path="*" element={<Notfound />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

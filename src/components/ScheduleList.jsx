@@ -1,10 +1,16 @@
-import React, { useRef, useState, useEffect } from 'react';
-import ScheduleItem from './ScheduleItem';
-import Button from './Button';
-import './ScheduleList.css';
-import { format } from "date-fns";
+import React, { useRef, useState, useEffect } from "react";
+import ScheduleItem from "./ScheduleItem";
+import Button from "./Button";
+import "./ScheduleList.css";
+import { format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
-import Editor from './Editor';
+import Editor from "./Editor";
+import SERVER_URL from "../config/server";
+
+const STATUS = {
+  IN_PROGRESS: "IN_PROGRESS",
+  DONE: "DONE",
+};
 
 const ScheduleList = () => {
   const personalRef = useRef(null);
@@ -14,28 +20,280 @@ const ScheduleList = () => {
   const [showPersonalEditor, setShowPersonalEditor] = useState(false);
   const [showGroupEditor, setShowGroupEditor] = useState(false);
 
-  const [personalSchedules, setPersonalSchedules] = useState([
-    { content: "개인 일정 A", end_datetime: "06/16" },
-    { content: "개인 일정 B", end_datetime: "06/17" },
-    { content: "개인 일정 C", end_datetime: "06/18" }
-  ]);
+  const [personalSchedules, setPersonalSchedules] = useState([]);
+  const [groupSchedules, setGroupSchedules] = useState([]);
 
-  const [groupSchedules, setGroupSchedules] = useState([
-    { name: "양준민", content: "그룹 일정 A", end_datetime: "06/19" },
-    { name: "양준민", content: "그룹 일정 B", end_datetime: "06/20" },
-    { name: "양준민", content: "그룹 일정 C", end_datetime: "06/21" }
-  ]);
+  const [groups, setGroups] = useState([]); // 사용자가 속한 그룹 목록
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
 
-  const handleAddPersonal = (item) => {
-    setPersonalSchedules(prev => [...prev, item]);
-    setShowPersonalEditor(false);
+  const today = new Date();
+  const formattedDate = format(today, "yyyy년 MM월 dd일 EEEE", { locale: ko });
+
+  const token = localStorage.getItem("accessToken");
+
+  // 개인 일정 불러오기
+  const fetchPersonalSchedules = async () => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/schedules/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        console.error("개인 일정 불러오기 실패");
+        return;
+      }
+      const data = await res.json();
+      setPersonalSchedules(data);
+    } catch (err) {
+      console.error("개인 일정 요청 에러:", err);
+    }
   };
 
-  const handleAddGroup = (item) => {
-    setGroupSchedules(prev => [...prev, item]);
-    setShowGroupEditor(false);
+  useEffect(() => {
+    fetchPersonalSchedules();
+  }, [token]);
+
+  // 사용자 그룹 목록 불러오기
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchGroups = async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/teams/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) {
+          console.error("그룹 목록 불러오기 실패");
+          return;
+        }
+
+        const data = await res.json();
+        setGroups(data);
+
+        if (data.length > 0) {
+          setSelectedGroupId(data[0].id);
+        }
+      } catch (err) {
+        console.error("그룹 목록 요청 실패:", err);
+      }
+    };
+
+    fetchGroups();
+  }, [token]);
+
+  // 그룹 일정 불러오기 함수 (재사용용)
+  const fetchGroupSchedules = async () => {
+    if (!token || !selectedGroupId) {
+      setGroupSchedules([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${SERVER_URL}/api/schedules/team/${selectedGroupId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        console.error("그룹 일정 불러오기 실패");
+        setGroupSchedules([]);
+        return;
+      }
+
+      const data = await res.json();
+      setGroupSchedules(data);
+    } catch (err) {
+      console.error("그룹 일정 요청 실패:", err);
+      setGroupSchedules([]);
+    }
   };
 
+  // 선택된 그룹 ID 바뀔 때 그룹 일정 다시 불러오기
+  useEffect(() => {
+    fetchGroupSchedules();
+  }, [token, selectedGroupId]);
+
+  // 개인 일정 추가
+  const handleAddPersonal = async (item) => {
+    if (!token) return;
+
+    const body = {
+      content: item.content,
+      dueDate: item.deadline,
+      status: STATUS.IN_PROGRESS,
+      teamId: null,
+      type: "PERSONAL",
+    };
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/schedules`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        alert("개인 일정 추가 실패: " + errorText);
+        return;
+      }
+
+      // 서버 동기화 후 화면 전체 새로고침
+      window.location.reload();
+    } catch (err) {
+      console.error("개인 일정 추가 에러:", err);
+      alert("개인 일정 추가 중 오류 발생");
+    }
+  };
+
+  // 개인 일정 삭제
+  const handleDeletePersonal = async (id) => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/schedules/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        alert("삭제 실패");
+        return;
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.error("일정 삭제 에러:", err);
+    }
+  };
+
+  // 개인 일정 상태 토글
+  const handleTogglePersonal = async (item) => {
+    if (!token) return;
+
+    try {
+      const newStatus =
+        item.status === STATUS.DONE ? STATUS.IN_PROGRESS : STATUS.DONE;
+      const updatedItem = { ...item, status: newStatus };
+
+      const res = await fetch(`${SERVER_URL}/api/schedules/${item.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedItem),
+      });
+
+      if (!res.ok) {
+        alert("상태 변경 실패");
+        return;
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.error("상태 변경 에러:", err);
+    }
+  };
+
+  // 그룹 일정 추가
+  const handleAddGroup = async (item) => {
+    if (!token) return;
+
+    const body = {
+      content: item.content,
+      dueDate: item.deadline,
+      status: STATUS.IN_PROGRESS,
+      type: "TEAM",
+      teamId: selectedGroupId,
+    };
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/schedules`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        alert("그룹 일정 추가 실패: " + errorText);
+        return;
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.error("그룹 일정 추가 에러:", err);
+      alert("그룹 일정 추가 중 오류 발생");
+    }
+  };
+
+  // 그룹 일정 상태 토글
+  const handleToggleGroup = async (item) => {
+    if (!token) return;
+
+    try {
+      const newStatus =
+        item.status === STATUS.DONE ? STATUS.IN_PROGRESS : STATUS.DONE;
+      const updatedItem = { ...item, status: newStatus };
+
+      const res = await fetch(`${SERVER_URL}/api/schedules/${item.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedItem),
+      });
+
+      if (!res.ok) {
+        alert("상태 변경 실패");
+        return;
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.error("상태 변경 에러:", err);
+    }
+  };
+
+  // 그룹 일정 삭제
+  const handleDeleteGroup = async (id) => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/schedules/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        alert("삭제 실패");
+        return;
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.error("일정 삭제 에러:", err);
+    }
+  };
+
+  // 그룹 선택 변경 핸들러
+  const handleGroupChange = (e) => {
+    setSelectedGroupId(Number(e.target.value));
+  };
+
+  // 레이아웃 맞춤 높이 계산
   useEffect(() => {
     const personalHeight = personalRef.current?.offsetHeight || 0;
     const groupHeight = groupRef.current?.offsetHeight || 0;
@@ -43,35 +301,39 @@ const ScheduleList = () => {
     setDividerHeight(maxHeight + 20);
   }, [personalSchedules, groupSchedules, showPersonalEditor, showGroupEditor]);
 
-  const today = new Date();
-  const formattedDate = format(today, "yyyy년 MM월 dd일 EEEE", { locale: ko });
-
   return (
     <div className="ScheduleListContainer">
       <h4 className="date-title">{formattedDate}</h4>
 
       <div className="select-row">
-        <select>
-          <option>그룹 선택</option>
-          <option>그룹1</option>
-          <option>그룹2</option>
-          <option>그룹3</option>
-          <option>그룹4</option>
+        <select onChange={handleGroupChange} value={selectedGroupId || ""}>
+          <option value="" disabled>
+            그룹 선택
+          </option>
+          {groups.map((group) => (
+            <option key={group.id} value={group.id}>
+              {group.name}
+            </option>
+          ))}
         </select>
       </div>
 
       <div className="items-row">
         <div className="Personal_area" ref={personalRef}>
           <h3>개인 일정</h3>
-          {personalSchedules.map((item, idx) => (
+          {personalSchedules.map((item) => (
             <ScheduleItem
-              key={idx}
-              {...item}
-              onDelete={() => {
-                setPersonalSchedules(prev => prev.filter((_, i) => i !== idx));
-              }}
+              key={item.id}
+              content={item.content}
+              end_datetime={
+                item.dueDate ? format(parseISO(item.dueDate), "MM/dd") : ""
+              }
+              isDone={item.status === STATUS.DONE}
+              onDelete={() => handleDeletePersonal(item.id)}
+              onToggle={() => handleTogglePersonal(item)}
             />
           ))}
+
           {!showPersonalEditor ? (
             <Button
               className="Add_Schedule"
@@ -91,19 +353,24 @@ const ScheduleList = () => {
         <div
           className="vertical-divider"
           style={{ height: dividerHeight ? `${dividerHeight}px` : "0" }}
-        ></div>
+        />
 
         <div className="Group_area" ref={groupRef}>
           <h3>그룹 일정</h3>
-          {groupSchedules.map((item, idx) => (
+          {groupSchedules.map((item) => (
             <ScheduleItem
-              key={idx}
+              key={item.id}
               {...item}
-              onDelete={() => {
-                setGroupSchedules(prev => prev.filter((_, i) => i !== idx));
-              }}
+              name={item.author || "알 수 없음"}
+              end_datetime={
+                item.dueDate ? format(parseISO(item.dueDate), "MM/dd") : ""
+              }
+              isDone={item.status === STATUS.DONE}
+              onDelete={() => handleDeleteGroup(item.id)}
+              onToggle={() => handleToggleGroup(item)}
             />
           ))}
+
           {!showGroupEditor ? (
             <Button
               className="Add_Schedule"

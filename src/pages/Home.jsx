@@ -8,7 +8,7 @@ const Home = () => {
   const [showCalendar, setShowCalendar] = useState(false); // 달력 표시 상태
 
   const toggleCalendar = () => {
-    setShowCalendar(prev => !prev);
+    setShowCalendar((prev) => !prev);
   };
 
   return (
@@ -16,7 +16,10 @@ const Home = () => {
       <Header />
 
       <div className="MainContent">
-        <div className="CalendarWrapper" style={{ display: showCalendar ? "block" : "none" }}>
+        <div
+          className="CalendarWrapper"
+          style={{ display: showCalendar ? "block" : "none" }}
+        >
           <CustomCalendar />
         </div>
 
