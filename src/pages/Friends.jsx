@@ -11,7 +11,7 @@ const Friends = () => {
 
   const [friends, setFriends] = useState([]);
   const [requests, setRequests] = useState([]);
-
+  //깃을 위해 수정사항용 주석
   // 받은 친구 요청 불러오기
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
