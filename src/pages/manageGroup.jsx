@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import SERVER_URL from "../config/server";
-import "./ManageGroup.css";
+import "./manageGroup.css";
 
 const ManageGroup = () => {
   const { teamId } = useParams();
