@@ -23,7 +23,7 @@ const ScheduleList = () => {
   const [personalSchedules, setPersonalSchedules] = useState([]);
   const [groupSchedules, setGroupSchedules] = useState([]);
 
-  const [groups, setGroups] = useState([]); // 사용자가 속한 그룹 목록
+  const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
 
   const today = new Date();
@@ -31,10 +31,8 @@ const ScheduleList = () => {
 
   const token = localStorage.getItem("accessToken");
 
-  // 개인 일정 불러오기
   const fetchPersonalSchedules = async () => {
     if (!token) return;
-
     try {
       const res = await fetch(`${SERVER_URL}/api/schedules/my`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -50,46 +48,31 @@ const ScheduleList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPersonalSchedules();
-  }, [token]);
-
-  // 사용자 그룹 목록 불러오기
-  useEffect(() => {
+  const fetchGroups = async () => {
     if (!token) return;
-
-    const fetchGroups = async () => {
-      try {
-        const res = await fetch(`${SERVER_URL}/api/teams/my`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          console.error("그룹 목록 불러오기 실패");
-          return;
-        }
-
-        const data = await res.json();
-        setGroups(data);
-
-        if (data.length > 0) {
-          setSelectedGroupId(data[0].id);
-        }
-      } catch (err) {
-        console.error("그룹 목록 요청 실패:", err);
+    try {
+      const res = await fetch(`${SERVER_URL}/api/teams/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        console.error("그룹 목록 불러오기 실패");
+        return;
       }
-    };
+      const data = await res.json();
+      setGroups(data);
+      if (data.length > 0 && !selectedGroupId) {
+        setSelectedGroupId(data[0].id);
+      }
+    } catch (err) {
+      console.error("그룹 목록 요청 실패:", err);
+    }
+  };
 
-    fetchGroups();
-  }, [token]);
-
-  // 그룹 일정 불러오기 함수 (재사용용)
   const fetchGroupSchedules = async () => {
     if (!token || !selectedGroupId) {
       setGroupSchedules([]);
       return;
     }
-
     try {
       const res = await fetch(
         `${SERVER_URL}/api/schedules/team/${selectedGroupId}`,
@@ -97,13 +80,11 @@ const ScheduleList = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       if (!res.ok) {
         console.error("그룹 일정 불러오기 실패");
         setGroupSchedules([]);
         return;
       }
-
       const data = await res.json();
       setGroupSchedules(data);
     } catch (err) {
@@ -112,15 +93,20 @@ const ScheduleList = () => {
     }
   };
 
-  // 선택된 그룹 ID 바뀔 때 그룹 일정 다시 불러오기
+  useEffect(() => {
+    fetchPersonalSchedules();
+  }, [token]);
+
+  useEffect(() => {
+    fetchGroups();
+  }, [token]);
+
   useEffect(() => {
     fetchGroupSchedules();
   }, [token, selectedGroupId]);
 
-  // 개인 일정 추가
   const handleAddPersonal = async (item) => {
     if (!token) return;
-
     const body = {
       content: item.content,
       dueDate: item.deadline,
@@ -145,15 +131,14 @@ const ScheduleList = () => {
         return;
       }
 
-      // 서버 동기화 후 화면 전체 새로고침
-      window.location.reload();
+      await fetchPersonalSchedules();
+      setShowPersonalEditor(false);
     } catch (err) {
       console.error("개인 일정 추가 에러:", err);
       alert("개인 일정 추가 중 오류 발생");
     }
   };
 
-  // 개인 일정 삭제
   const handleDeletePersonal = async (id) => {
     if (!token) return;
 
@@ -168,13 +153,12 @@ const ScheduleList = () => {
         return;
       }
 
-      window.location.reload();
+      await fetchPersonalSchedules();
     } catch (err) {
       console.error("일정 삭제 에러:", err);
     }
   };
 
-  // 개인 일정 상태 토글
   const handleTogglePersonal = async (item) => {
     if (!token) return;
 
@@ -197,13 +181,19 @@ const ScheduleList = () => {
         return;
       }
 
-      window.location.reload();
+      await fetchPersonalSchedules();
     } catch (err) {
       console.error("상태 변경 에러:", err);
     }
   };
 
-  // 그룹 일정 추가
+  // ✅ 그룹 일정 관련 함수들 수정
+  const softRefreshAll = async () => {
+    await fetchGroups();
+    await fetchPersonalSchedules();
+    await fetchGroupSchedules();
+  };
+
   const handleAddGroup = async (item) => {
     if (!token) return;
 
@@ -231,14 +221,14 @@ const ScheduleList = () => {
         return;
       }
 
-      window.location.reload();
+      await softRefreshAll();
+      setShowGroupEditor(false);
     } catch (err) {
       console.error("그룹 일정 추가 에러:", err);
       alert("그룹 일정 추가 중 오류 발생");
     }
   };
 
-  // 그룹 일정 상태 토글
   const handleToggleGroup = async (item) => {
     if (!token) return;
 
@@ -261,13 +251,12 @@ const ScheduleList = () => {
         return;
       }
 
-      window.location.reload();
+      await softRefreshAll();
     } catch (err) {
       console.error("상태 변경 에러:", err);
     }
   };
 
-  // 그룹 일정 삭제
   const handleDeleteGroup = async (id) => {
     if (!token) return;
 
@@ -282,18 +271,16 @@ const ScheduleList = () => {
         return;
       }
 
-      window.location.reload();
+      await softRefreshAll();
     } catch (err) {
       console.error("일정 삭제 에러:", err);
     }
   };
 
-  // 그룹 선택 변경 핸들러
   const handleGroupChange = (e) => {
     setSelectedGroupId(Number(e.target.value));
   };
 
-  // 레이아웃 맞춤 높이 계산
   useEffect(() => {
     const personalHeight = personalRef.current?.offsetHeight || 0;
     const groupHeight = groupRef.current?.offsetHeight || 0;

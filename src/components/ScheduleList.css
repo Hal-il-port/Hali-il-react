@@ -33,23 +33,32 @@
   display: flex;
   justify-content: space-around;
   gap: 1rem;
-  min-height: 400px;
+  min-height: 400px; /* 최소 높이 고정 */
+  height: auto; /* 내용에 따라 유동적 */
+  align-items: flex-start; /* 컨테이너가 아이템 높이에 맞게 커지도록 */
+  max-height: 100vh; /* 필요 시 너무 커지는거 방지 */
+  /* overflow-y: visible; // 기본값이라 생략 가능 */
 }
 
-/* 개인 및 그룹 영역 세로 정렬 */
 .Personal_area,
 .Group_area {
-  text-align: center;
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto; /* 늘어나고 줄어들 수 있게 */
   min-width: 600px;
-  gap: 25px;
+  gap: 25px; /* 아이템 간격 유지 */
   padding: 30px;
-  width: 100%;
   border-radius: 30px;
   background-color: white;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  min-height: 400px; /* 최소 높이 유지 */
+  height: auto; /* 내용에 따라 높이 조절 */
+  box-sizing: border-box;
+
+  overflow-y: auto; /* 내용 많을 때 스크롤 */
+  max-height: 100%; /* 부모 높이 안 넘도록 */
 }
 
 /* 세로 구분선 */
