@@ -6,11 +6,10 @@ import Signup from "./pages/Signup";
 import Mypage from "./pages/Mypage";
 import Notfound from "./pages/Notfound";
 import Groups from "./pages/Groups";
-import Board from "./pages/Board";
 import Friends from "./pages/Friends";
 import AddFriend from "./pages/AddFriend";
 import CreateGroup from "./pages/CreateGroup";
-import ManageGroup from "./pages/manageGroup"; // 대문자 시작
+import ManageGroup from "./pages/manageGroup";
 
 function App() {
   return (
@@ -21,12 +20,10 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/groups" element={<Groups />} />
-        <Route path="/board" element={<Board />} />
         <Route path="/friends" element={<Friends />} />
         <Route path="/add-friend" element={<AddFriend />} />
         <Route path="/create-group" element={<CreateGroup />} />
         <Route path="/manageGroup/:teamId" element={<ManageGroup />} />
-
         <Route path="*" element={<Notfound />} />
       </Routes>
     </>
