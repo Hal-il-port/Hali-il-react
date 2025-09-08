@@ -1,6 +1,8 @@
 export const getHolidays = async (year, month) => {
   try {
-    const res = await fetch(`/api/holidays?year=${year}&month=${month}`); // 내 서버 경유
+    const res = await fetch(
+      `/api/schedules/holidays?year=${year}&month=${month}`
+    ); // 내 서버 경유
     const data = await res.json();
 
     const items = data.response?.body?.items?.item;
