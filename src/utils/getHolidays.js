@@ -3,7 +3,7 @@ export const getHolidays = async (year, month) => {
     const res = await fetch(
       `${
         import.meta.env.VITE_SERVER_URL
-      }/api/schedules/holidays?year=${year}&month=${month}`
+      }/holidays?year=${year}&month=${month}`
     );
 
     const text = await res.text(); // 먼저 텍스트로 받기
