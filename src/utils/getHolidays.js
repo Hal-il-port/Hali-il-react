@@ -1,10 +1,15 @@
 export const getHolidays = async (year, month) => {
   try {
     const res = await fetch(
-      `/api/schedules/holidays?year=${year}&month=${month}`
-    ); // 내 서버 경유
-    const data = await res.json();
+      `${
+        import.meta.env.VITE_SERVER_URL
+      }/api/schedules/holidays?year=${year}&month=${month}`
+    );
 
+    const text = await res.text(); // 먼저 텍스트로 받기
+    if (!text) return []; // body 없으면 빈 배열 반환
+
+    const data = JSON.parse(text); // JSON으로 변환
     const items = data.response?.body?.items?.item;
     if (!items) return [];
 
