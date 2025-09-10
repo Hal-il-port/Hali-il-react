@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CustomCalendar.css";
 import { getHolidays } from "../utils/getHolidays";
+
 
 const CustomCalendar = () => {
   const [value, setValue] = useState(new Date());
@@ -35,6 +37,7 @@ const CustomCalendar = () => {
         }}
         tileClassName={({ date }) => {
           const year = date.getFullYear();
+
           const month = `${date.getMonth() + 1}`.padStart(2, "0");
           const day = `${date.getDate()}`.padStart(2, "0");
           const yyyymmdd = `${year}${month}${day}`;
@@ -43,6 +46,7 @@ const CustomCalendar = () => {
       />
       <div style={{ marginTop: "1rem" }}>
         해당 날짜에 개인 일정은 노란색 선 그룹 일정은 초록색 선으로 표시됩니다.
+
       </div>
     </div>
   );
