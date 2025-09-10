@@ -15,4 +15,4 @@ export const getHolidays = async (year, month) => {
     console.error("공휴일 데이터 요청 실패:", error);
     return [];
   }
-};
+}
