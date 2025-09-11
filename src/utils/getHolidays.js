@@ -1,9 +1,8 @@
 export const getHolidays = async (year, month) => {
   try {
+    // 백엔드 서버 주소를 직접 사용
     const res = await fetch(
-      `${
-        import.meta.env.VITE_SERVER_URL
-      }/holidays?year=${year}&month=${month}`
+      `https://hal-il.site/api/schedules/holidays?year=${year}&month=${month}`
     );
 
     const text = await res.text(); // 먼저 텍스트로 받기
