@@ -1,77 +1,50 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from "react";
 import "./Header.css";
 
+const Notice = ({ alerts = [] }) => {
+  // 기본값 [] 추가
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const noticeRef = useRef(null);
 
-const Notice = () => {
-    const [isNoticeOpen, setIsNoticeOpen] = useState(false);
-    const noticeRef = useRef(null);
+  const toggleNotice = () => setIsNoticeOpen((prev) => !prev);
 
-    const handleItemClick = (item) => {
-        setIsNoticeOpen(false); // 메뉴 닫기
-        switch (item) {
-            case "알림1":
-                console.log("알림1");
-                break;
-            case "알림2":
-                console.log("알림2");
-                break;
-            case "알림3":
-                console.log("알림3");
-                break;
-            case "알림4":
-                console.log("알림4");
-                break;
-            case "알림5":
-                console.log("알림5");
-                break;
-            default:
-                break;
-        }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (noticeRef.current && !noticeRef.current.contains(event.target)) {
+        setIsNoticeOpen(false);
+      }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-    const toggleNotice = () => setIsNoticeOpen(prev => !prev);
+  return (
+    <div className="notice-container" ref={noticeRef}>
+      <div
+        className="notice-icon"
+        onClick={toggleNotice}
+        style={{ cursor: "pointer" }}
+      >
+        알림 ({alerts.length})
+      </div>
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (noticeRef.current && !noticeRef.current.contains(event.target)) {
-                setIsNoticeOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    const noticeItems = ["알림1", "알림2", "알림3", "알림4", "알림5"];
-
-
-
-    return (
-        <div className="notice-container" ref={noticeRef}>
-            <div
-                alt="notice icon"
-                className="notice-icon"
-                onClick={toggleNotice}
-                style={{ cursor: "pointer"}}
-                >알림</div>
-        
-                {isNoticeOpen && (
-                    <div className="dropdown-notice">
-                        {noticeItems.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="dropdown-item"
-                                onClick={() => handleItemClick(item)}
-                            >
-                                {item}
-                            </div>
-                        ))}
-                    </div>
-                )}
+      {isNoticeOpen && (
+        <div className="dropdown-notice">
+          {alerts.length === 0 ? (
+            <div className="dropdown-item">알림이 없습니다.</div>
+          ) : (
+            alerts.map((item, idx) => (
+              <div key={idx} className="dropdown-item">
+                {item}
+              </div>
+            ))
+          )}
         </div>
-    );
-}
+      )}
+    </div>
+  );
+};
 
 export default Notice;
