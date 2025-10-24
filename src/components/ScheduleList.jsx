@@ -105,6 +105,14 @@ const ScheduleList = () => {
     fetchGroupSchedules();
   }, [token, selectedGroupId]);
 
+  // ✅ 그룹 + 개인 일정 동기화용
+  const softRefreshAll = async () => {
+    await fetchGroups();
+    await fetchPersonalSchedules();
+    await fetchGroupSchedules();
+  };
+
+  // ✅ 개인 일정 추가
   const handleAddPersonal = async (item) => {
     if (!token) return;
     const body = {
@@ -131,7 +139,7 @@ const ScheduleList = () => {
         return;
       }
 
-      await fetchPersonalSchedules();
+      await softRefreshAll(); // 🔥 수정됨
       setShowPersonalEditor(false);
     } catch (err) {
       console.error("개인 일정 추가 에러:", err);
@@ -139,6 +147,7 @@ const ScheduleList = () => {
     }
   };
 
+  // ✅ 개인 일정 삭제
   const handleDeletePersonal = async (id) => {
     if (!token) return;
 
@@ -153,12 +162,13 @@ const ScheduleList = () => {
         return;
       }
 
-      await fetchPersonalSchedules();
+      await softRefreshAll(); // 🔥 수정됨
     } catch (err) {
       console.error("일정 삭제 에러:", err);
     }
   };
 
+  // ✅ 개인 일정 상태 토글
   const handleTogglePersonal = async (item) => {
     if (!token) return;
 
@@ -181,19 +191,13 @@ const ScheduleList = () => {
         return;
       }
 
-      await fetchPersonalSchedules();
+      await softRefreshAll(); // 🔥 수정됨
     } catch (err) {
       console.error("상태 변경 에러:", err);
     }
   };
 
-  // ✅ 그룹 일정 관련 함수들 수정
-  const softRefreshAll = async () => {
-    await fetchGroups();
-    await fetchPersonalSchedules();
-    await fetchGroupSchedules();
-  };
-
+  // ✅ 그룹 일정 관련 함수들
   const handleAddGroup = async (item) => {
     if (!token) return;
 
