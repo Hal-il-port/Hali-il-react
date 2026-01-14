@@ -39,4 +39,4 @@ export const getHolidays = async (
     console.error("공휴일 데이터 요청 중 에러 발생:", error);
     return [];
   }
-};
+}
